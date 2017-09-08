@@ -1,8 +1,7 @@
 package com.company;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 public class StringSorter {
 
@@ -34,6 +33,7 @@ public class StringSorter {
             if(!fileIsFull) {
                 writeToNewFile(list);
             }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,6 +53,24 @@ public class StringSorter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+
+    private void deleteFirstLine(File file) throws IOException, NoSuchElementException {
+        Scanner scanner = new Scanner(file);
+        ArrayList<String> coll = new ArrayList<String>();
+        scanner.nextLine();
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            coll.add(line);
+        }
+        scanner.close();
+        PrintWriter writer = new PrintWriter(file);
+        for (String line : coll) {
+            writer.println(line);
+        }
+        writer.close();
     }
 
 
