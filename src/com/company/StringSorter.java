@@ -10,22 +10,32 @@ public class StringSorter {
 
     public static void main(String[] args) {
         StringSorter main = new StringSorter();
-        LinkedList<String> strings = main.readFromFile("resources\\lines");
-        main.writeToNewFile(strings);
+        main.readAndDivide("resources\\lines");
     }
 
-    private LinkedList<String> readFromFile(String path) {
+    private void readAndDivide(String path) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
-            LinkedList<String> list = new LinkedList<>();
             String line;
+            int sizeOfNewFile = 5;
+            int i = 1;
+            LinkedList<String> list = new LinkedList<>();
+            boolean fileIsFull = false;
             while ((line = br.readLine()) != null) {
+                fileIsFull = false;
                 list.add(line);
+                if(i%sizeOfNewFile == 0) {
+                    writeToNewFile(list);
+                    list = new LinkedList<>();
+                    fileIsFull = true;
+                }
+                i++;
             }
-            return list;
+            if(!fileIsFull) {
+                writeToNewFile(list);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -34,7 +44,7 @@ public class StringSorter {
         Collections.sort(list);
         String key = "file" + numberOfFile;
         try {
-            File file = new File("resources/" + key );
+            File file = new File("resources/temporaryFiles/" + key );
             PrintWriter writer = new PrintWriter(file);
             for(String line : list) {
                 writer.println(line);
@@ -44,6 +54,7 @@ public class StringSorter {
             e.printStackTrace();
         }
     }
+
 
 
 }
