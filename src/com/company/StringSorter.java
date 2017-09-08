@@ -73,6 +73,18 @@ public class StringSorter {
         writer.close();
     }
 
+    private String readFirstElement(File file) {
+        try {
+            BufferedReader br  = new BufferedReader(new FileReader(file));
+            String  line  = br.readLine();
+            br.close();
+            deleteFirstLine(file);
+            return line;
+        } catch (IOException | NoSuchElementException e) {
+            return null;
+        }
+    }
+
 
 
 }
