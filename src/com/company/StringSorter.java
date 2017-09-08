@@ -85,6 +85,16 @@ public class StringSorter {
         }
     }
 
+    private LinkedList<String> getFirstMinLines (File folder) {
+        LinkedList<String> list = new LinkedList<>();
+        File[] listOfFiles = folder.listFiles();
+        for (File fileEntry : listOfFiles) {
+            if(readFirstElement(fileEntry) != null)
+                list.add(readFirstElement(fileEntry));
+        }
+        return list;
+    }
+
 
 
 }
