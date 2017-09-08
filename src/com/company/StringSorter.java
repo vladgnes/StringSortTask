@@ -107,6 +107,37 @@ public class StringSorter {
         return  minIndex;
     }
 
+    private void mergeFiles() {
+        File folder = new File(Thread.currentThread().getContextClassLoader().getResource("temporaryFiles").getFile());
+        LinkedList<String> minLines = getFirstMinLines(folder);
+        ArrayList<File> files = new ArrayList<>(Arrays.asList(folder.listFiles()));
+        File file = new File("resources/sortedLines.txt");
+        try {
+            PrintWriter writer = new PrintWriter(file);
+            while (!minLines.isEmpty()) {
+                int numberOfFile  = indexOfMinElement(minLines);
+                Collections.sort(minLines);
+                writer.println(minLines.getFirst());
+                minLines.removeFirst();
+                int i = 0;
+                for (File fileEntry : files) {
+                    if(readFirstElement(fileEntry) == null){
+                        files.remove(fileEntry);
+                        break;
+                    }
+                    else if(numberOfFile == i) {
+                        minLines.add(readFirstElement(fileEntry));
+                        break;
+                    }
+                    i++;
+                }
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
 }
