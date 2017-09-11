@@ -55,46 +55,6 @@ public class StringSorter {
         }
     }
 
-
-
-    private void deleteFirstLine(File file) throws IOException, NoSuchElementException {
-        Scanner scanner = new Scanner(file);
-        ArrayList<String> coll = new ArrayList<String>();
-        scanner.nextLine();
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            coll.add(line);
-        }
-        scanner.close();
-        PrintWriter writer = new PrintWriter(file);
-        for (String line : coll) {
-            writer.println(line);
-        }
-        writer.close();
-    }
-
-    private String readFirstElement(File file) {
-        try {
-            BufferedReader br  = new BufferedReader(new FileReader(file));
-            String  line  = br.readLine();
-            br.close();
-            deleteFirstLine(file);
-            return line;
-        } catch (IOException | NoSuchElementException e) {
-            return null;
-        }
-    }
-
-    private LinkedList<String> getFirstMinLines (File folder) {
-        LinkedList<String> list = new LinkedList<>();
-        File[] listOfFiles = folder.listFiles();
-        for (File fileEntry : listOfFiles) {
-            if(readFirstElement(fileEntry) != null)
-                list.add(readFirstElement(fileEntry));
-        }
-        return list;
-    }
-
     private int indexOfMinElement (LinkedList<String> list) {
         String min = list.getFirst();
         int minIndex = 0;
@@ -137,7 +97,4 @@ public class StringSorter {
         }
 
     }
-
-
-
 }
