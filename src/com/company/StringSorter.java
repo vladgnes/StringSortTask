@@ -16,6 +16,8 @@ public class StringSorter {
     private void readAndDivide(String path) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
+            File file = new File("resources\\temporaryFiles");
+            file.mkdir();
             String line;
             int sizeOfNewFile = 5;
             int i = 1;
