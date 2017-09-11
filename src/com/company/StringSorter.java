@@ -56,8 +56,8 @@ public class StringSorter {
         }
     }
 
-    private int indexOfMinElement (LinkedList<String> list) {
-        String min = list.getFirst();
+    private int getMinIndex (ArrayList<String> list) {
+        String min = list.get(0);
         int minIndex = 0;
         for (int i = 0; i < list.size(); i++) {
             if(min.compareTo(list.get(i)) > 0) {
