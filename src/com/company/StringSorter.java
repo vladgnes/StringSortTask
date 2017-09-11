@@ -10,12 +10,12 @@ public class StringSorter {
     public static void main(String[] args) {
         StringSorter main = new StringSorter();
         main.readAndDivide("resources\\lines");
+        main.mergeFiles();
     }
 
     private void readAndDivide(String path) {
         try {
-            File lines = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
-            BufferedReader br = new BufferedReader(new FileReader(lines));
+            BufferedReader br = new BufferedReader(new FileReader(path));
             String line;
             int sizeOfNewFile = 5;
             int i = 1;
@@ -69,33 +69,40 @@ public class StringSorter {
     }
 
     private void mergeFiles() {
-        File folder = new File(Thread.currentThread().getContextClassLoader().getResource("temporaryFiles").getFile());
-        LinkedList<String> minLines = getFirstMinLines(folder);
+        File folder = new File("resources\\temporaryFiles");
         ArrayList<File> files = new ArrayList<>(Arrays.asList(folder.listFiles()));
-        File file = new File("resources/sortedLines.txt");
+        ArrayList<BufferedReader> readers = new ArrayList<>(numberOfFile);
+        File sortedLines = new File("resources\\sortedLines");
         try {
-            PrintWriter writer = new PrintWriter(file);
-            while (!minLines.isEmpty()) {
-                int numberOfFile  = indexOfMinElement(minLines);
-                Collections.sort(minLines);
-                writer.println(minLines.getFirst());
-                minLines.removeFirst();
-                int i = 0;
-                for (File fileEntry : files) {
-                    if(readFirstElement(fileEntry) == null){
-                        files.remove(fileEntry);
-                        break;
-                    }
-                    else if(numberOfFile == i) {
-                        minLines.add(readFirstElement(fileEntry));
-                        break;
-                    }
-                    i++;
+            PrintWriter writer = new PrintWriter(sortedLines);
+            for (int i = 0; i < numberOfFile; i++) {
+                readers.add(new BufferedReader(new FileReader(files.get(i))));
+            }
+            ArrayList<String> currentStrings = new ArrayList<>(numberOfFile);
+            for (int i = 0; i < numberOfFile; i++) {
+                currentStrings.add(readers.get(i).readLine());
+            }
+            while(!currentStrings.isEmpty()) {
+                int min = getMinIndex(currentStrings);
+                writer.println(currentStrings.get(min));
+                String s = readers.get(min).readLine();
+                if (s == null) {
+                    currentStrings.remove(min);
+                    readers.get(min).close();
+                    readers.remove(min);
+                    files.get(min).delete();
+                }
+                else {
+                    currentStrings.set(min, s);
                 }
             }
-        } catch(IOException e) {
+            for (File file : files) {
+                file.delete();
+            }
+            folder.delete();
+            writer.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
