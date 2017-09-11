@@ -14,7 +14,8 @@ public class StringSorter {
 
     private void readAndDivide(String path) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            File lines = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
+            BufferedReader br = new BufferedReader(new FileReader(lines));
             String line;
             int sizeOfNewFile = 5;
             int i = 1;
