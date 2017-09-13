@@ -6,6 +6,8 @@ import java.util.*;
 public class StringSorter {
 
     private int numberOfFile = 0;
+    private ArrayList<FileBean> fileBeans = new ArrayList<>();
+    private File folder = new File(getName("resources\\temporaryFiles"));
 
     public static void main(String[] args) {
         StringSorter main = new StringSorter();
@@ -16,8 +18,7 @@ public class StringSorter {
     private void readAndDivide(String path) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
-            File file = new File("resources\\temporaryFiles");
-            file.mkdir();
+            folder.mkdir();
             String line;
             int sizeOfNewFile = 5;
             int i = 1;
@@ -43,11 +44,13 @@ public class StringSorter {
     }
 
     private void writeToNewFile(LinkedList<String> list) {
-        numberOfFile++;
         Collections.sort(list);
-        String key = "file" + numberOfFile;
+        String key = "resources/temporaryFiles/file";
         try {
-            File file = new File("resources/temporaryFiles/" + key );
+            String fileName = getName(key);
+            File file = new File(fileName);
+            FileBean bean = new FileBean(new File(fileName));
+            fileBeans.add(bean);
             PrintWriter writer = new PrintWriter(file);
             for(String line : list) {
                 writer.println(line);
@@ -71,40 +74,42 @@ public class StringSorter {
     }
 
     private void mergeFiles() {
-        File folder = new File("resources\\temporaryFiles");
-        ArrayList<File> files = new ArrayList<>(Arrays.asList(folder.listFiles()));
-        ArrayList<BufferedReader> readers = new ArrayList<>(numberOfFile);
         File sortedLines = new File("resources\\sortedLines");
         try {
             PrintWriter writer = new PrintWriter(sortedLines);
-            for (int i = 0; i < numberOfFile; i++) {
-                readers.add(new BufferedReader(new FileReader(files.get(i))));
-            }
-            ArrayList<String> currentStrings = new ArrayList<>(numberOfFile);
-            for (int i = 0; i < numberOfFile; i++) {
-                currentStrings.add(readers.get(i).readLine());
+            ArrayList<String> currentStrings = new ArrayList<>();
+            for (FileBean fileBean : fileBeans) {
+                fileBean.setReader(new BufferedReader(new FileReader(fileBean.getFile())));
+                String str = fileBean.getReader().readLine();
+                currentStrings.add(str);
             }
             while(!currentStrings.isEmpty()) {
                 int min = getMinIndex(currentStrings);
                 writer.println(currentStrings.get(min));
-                String s = readers.get(min).readLine();
+                String s = fileBeans.get(min).getReader().readLine();
                 if (s == null) {
                     currentStrings.remove(min);
-                    readers.get(min).close();
-                    readers.remove(min);
-                    files.get(min).delete();
+                    fileBeans.get(min).getReader().close();
+                    fileBeans.get(min).getFile().delete();
+                    fileBeans.remove(min);
                 }
                 else {
                     currentStrings.set(min, s);
                 }
             }
-            for (File file : files) {
-                file.delete();
-            }
-            folder.delete();
             writer.close();
+            folder.delete();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getName(String name) {
+        if(new File(name).exists()) {
+            numberOfFile++;
+            name += numberOfFile;
+            getName(name);
+        }
+        return name;
     }
 }
