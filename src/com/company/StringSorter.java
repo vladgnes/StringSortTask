@@ -1,63 +1,60 @@
 package com.company;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class StringSorter {
 
     private int numberOfFile = 0;
     private FileBeansController fileBeansController = new FileBeansController();
-    private File folder = new File(getName("resources\\temporaryFiles"));
+    private File folder = new File(getName("temporaryFiles"));
 
-    public static void main(String[] args) {
-        StringSorter main = new StringSorter();
-        main.readAndDivide("resources\\lines", 5);
-        main.mergeFiles();
+    public void sortFile(String pathToFile, int bufferSize) {
+        try {
+            readAndDivide(pathToFile,bufferSize);
+            mergeFiles();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void readAndDivide(String path, int sizeOfNewFile) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(path));
-            folder.mkdir();
-            String line;
-            int i = 1;
-            LinkedList<String> list = new LinkedList<>();
-            boolean fileIsFull = false;
-            while ((line = br.readLine()) != null) {
-                fileIsFull = false;
-                list.add(line);
-                if(i%sizeOfNewFile == 0) {
-                    writeToNewFile(list);
-                    list = new LinkedList<>();
-                    fileIsFull = true;
-                }
-                i++;
-            }
-            if(!fileIsFull) {
+    private void readAndDivide(String path, int sizeOfNewFile) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(path));
+        folder.mkdir();
+        String line;
+        int i = 1;
+        LinkedList<String> list = new LinkedList<>();
+        boolean fileIsFull = false;
+        while ((line = br.readLine()) != null) {
+            fileIsFull = false;
+            list.add(line);
+            if(i%sizeOfNewFile == 0) {
                 writeToNewFile(list);
+                list = new LinkedList<>();
+                fileIsFull = true;
             }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            i++;
         }
+        if(!fileIsFull) {
+            writeToNewFile(list);
+        }
+        br.close();
     }
 
-    private void writeToNewFile(LinkedList<String> list) {
+    private void writeToNewFile(LinkedList<String> list) throws FileNotFoundException {
         Collections.sort(list);
-        String key = "resources/temporaryFiles/file";
-        try {
-            String fileName = getName(key);
-            File file = new File(fileName);
-            FileBean bean = new FileBean(new File(fileName));
-            fileBeansController.add(bean);
-            PrintWriter writer = new PrintWriter(file);
-            for(String line : list) {
-                writer.println(line);
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String key = "temporaryFiles" + File.separator + "file";
+        String fileName = getName(key);
+        File file = new File(fileName);
+        FileBean bean = new FileBean(new File(fileName));
+        fileBeansController.add(bean);
+        PrintWriter writer = new PrintWriter(file);
+        for(String line : list) {
+            writer.println(line);
         }
+        writer.close();
     }
 
     private int getMinIndex (ArrayList<String> list) {
@@ -72,29 +69,25 @@ public class StringSorter {
         return  minIndex;
     }
 
-    private void mergeFiles() {
-        File sortedLines = new File("resources\\sortedLines");
-        try {
-            PrintWriter writer = new PrintWriter(sortedLines);
-            fileBeansController.setReaders();
-            ArrayList<String> currentStrings = getCurrentStrings();
-            while(!currentStrings.isEmpty()) {
-                int min = getMinIndex(currentStrings);
-                writer.println(currentStrings.get(min));
-                String s = fileBeansController.get(min).getReader().readLine();
-                if (s == null) {
-                    currentStrings.remove(min);
-                    fileBeansController.delete(fileBeansController.get(min));
-                }
-                else {
-                    currentStrings.set(min, s);
-                }
+    private void mergeFiles() throws IOException {
+        File sortedLines = new File("sortedLines");
+        PrintWriter writer = new PrintWriter(sortedLines);
+        fileBeansController.setReaders();
+        ArrayList<String> currentStrings = getCurrentStrings();
+        while(!currentStrings.isEmpty()) {
+            int min = getMinIndex(currentStrings);
+            writer.println(currentStrings.get(min));
+            String s = fileBeansController.get(min).getReader().readLine();
+            if (s == null) {
+                currentStrings.remove(min);
+                fileBeansController.delete(fileBeansController.get(min));
             }
-            writer.close();
-            folder.delete();
-        } catch (IOException e) {
-            e.printStackTrace();
+            else {
+                currentStrings.set(min, s);
+            }
         }
+        writer.close();
+        folder.delete();
     }
 
     private String getName(String name) {
