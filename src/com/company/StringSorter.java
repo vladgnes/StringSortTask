@@ -6,21 +6,20 @@ import java.util.*;
 public class StringSorter {
 
     private int numberOfFile = 0;
-    private ArrayList<FileBean> fileBeans = new ArrayList<>();
+    private FileBeansController fileBeansController = new FileBeansController();
     private File folder = new File(getName("resources\\temporaryFiles"));
 
     public static void main(String[] args) {
         StringSorter main = new StringSorter();
-        main.readAndDivide("resources\\lines");
+        main.readAndDivide("resources\\lines", 5);
         main.mergeFiles();
     }
 
-    private void readAndDivide(String path) {
+    private void readAndDivide(String path, int sizeOfNewFile) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             folder.mkdir();
             String line;
-            int sizeOfNewFile = 5;
             int i = 1;
             LinkedList<String> list = new LinkedList<>();
             boolean fileIsFull = false;
@@ -50,7 +49,7 @@ public class StringSorter {
             String fileName = getName(key);
             File file = new File(fileName);
             FileBean bean = new FileBean(new File(fileName));
-            fileBeans.add(bean);
+            fileBeansController.add(bean);
             PrintWriter writer = new PrintWriter(file);
             for(String line : list) {
                 writer.println(line);
@@ -77,21 +76,15 @@ public class StringSorter {
         File sortedLines = new File("resources\\sortedLines");
         try {
             PrintWriter writer = new PrintWriter(sortedLines);
-            ArrayList<String> currentStrings = new ArrayList<>();
-            for (FileBean fileBean : fileBeans) {
-                fileBean.setReader(new BufferedReader(new FileReader(fileBean.getFile())));
-                String str = fileBean.getReader().readLine();
-                currentStrings.add(str);
-            }
+            fileBeansController.setReaders();
+            ArrayList<String> currentStrings = getCurrentStrings();
             while(!currentStrings.isEmpty()) {
                 int min = getMinIndex(currentStrings);
                 writer.println(currentStrings.get(min));
-                String s = fileBeans.get(min).getReader().readLine();
+                String s = fileBeansController.get(min).getReader().readLine();
                 if (s == null) {
                     currentStrings.remove(min);
-                    fileBeans.get(min).getReader().close();
-                    fileBeans.get(min).getFile().delete();
-                    fileBeans.remove(min);
+                    fileBeansController.delete(fileBeansController.get(min));
                 }
                 else {
                     currentStrings.set(min, s);
@@ -111,5 +104,14 @@ public class StringSorter {
             getName(name);
         }
         return name;
+    }
+
+    private ArrayList<String> getCurrentStrings() throws IOException {
+        ArrayList<String> currentStrings = new ArrayList<>();
+        for (FileBean fileBean : fileBeansController.getArray()) {
+            String str = fileBean.getReader().readLine();
+            currentStrings.add(str);
+        }
+        return currentStrings;
     }
 }
