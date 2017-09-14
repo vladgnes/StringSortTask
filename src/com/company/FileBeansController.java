@@ -35,6 +35,4 @@ public class FileBeansController {
         fileBean.getFile().delete();
         fileBeans.remove(fileBean);
     }
-
-
 }
