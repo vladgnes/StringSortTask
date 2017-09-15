@@ -1,9 +1,6 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 
 public class FileBean {
 
@@ -32,5 +29,9 @@ public class FileBean {
 
     public void openReader() throws FileNotFoundException {
         this.setReader(new BufferedReader(new FileReader(this.file)));
+    }
+
+    public void closeReader() throws IOException {
+        this.reader.close();
     }
 }
