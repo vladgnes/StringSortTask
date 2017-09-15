@@ -35,4 +35,15 @@ public class FileBeansController {
         fileBean.getFile().delete();
         fileBeans.remove(fileBean);
     }
+
+    public void getNextString(int min, ArrayList<String> currentStrings) throws IOException {
+        String s = this.get(min).getReader().readLine();
+        if (s == null) {
+            currentStrings.remove(min);
+            this.delete(this.get(min));
+        }
+        else {
+            currentStrings.set(min, s);
+        }
+    }
 }
