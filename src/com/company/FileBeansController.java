@@ -21,7 +21,7 @@ public class FileBeansController {
     public void setReaders() throws FileNotFoundException {
         if(!fileBeans.isEmpty()) {
             for (FileBean fileBean : fileBeans) {
-                fileBean.setReader(new BufferedReader(new FileReader(fileBean.getFile())));
+                fileBean.openReader();
             }
         }
     }
@@ -36,7 +36,7 @@ public class FileBeansController {
         fileBeans.remove(fileBean);
     }
 
-    public void getNextString(int min, ArrayList<String> currentStrings) throws IOException {
+    public void addNextString(int min, ArrayList<String> currentStrings) throws IOException {
         String s = this.get(min).getReader().readLine();
         if (s == null) {
             currentStrings.remove(min);

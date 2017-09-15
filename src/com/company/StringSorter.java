@@ -77,7 +77,7 @@ public class StringSorter {
         while(!currentStrings.isEmpty()) {
             int min = getMinIndex(currentStrings);
             writer.println(currentStrings.get(min));
-            fileBeansController.getNextString(min, currentStrings);
+            fileBeansController.addNextString(min, currentStrings);
         }
         writer.close();
         folder.delete();
