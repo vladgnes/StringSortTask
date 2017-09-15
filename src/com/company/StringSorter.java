@@ -46,9 +46,8 @@ public class StringSorter {
     private void writeToNewFile(LinkedList<String> list) throws FileNotFoundException {
         Collections.sort(list);
         String key = folder.getName() + File.separator + "file";
-        String fileName = getName(key);
-        File file = new File(fileName);
-        FileBean bean = new FileBean(new File(fileName));
+        File file = new File(getName(key));
+        FileBean bean = new FileBean(file);
         fileBeansController.add(bean);
         PrintWriter writer = new PrintWriter(file);
         for(String line : list) {
