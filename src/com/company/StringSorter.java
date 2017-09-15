@@ -45,7 +45,7 @@ public class StringSorter {
 
     private void writeToNewFile(LinkedList<String> list) throws FileNotFoundException {
         Collections.sort(list);
-        String key = "temporaryFiles" + File.separator + "file";
+        String key = folder.getName() + File.separator + "file";
         String fileName = getName(key);
         File file = new File(fileName);
         FileBean bean = new FileBean(new File(fileName));
@@ -77,14 +77,7 @@ public class StringSorter {
         while(!currentStrings.isEmpty()) {
             int min = getMinIndex(currentStrings);
             writer.println(currentStrings.get(min));
-            String s = fileBeansController.get(min).getReader().readLine();
-            if (s == null) {
-                currentStrings.remove(min);
-                fileBeansController.delete(fileBeansController.get(min));
-            }
-            else {
-                currentStrings.set(min, s);
-            }
+            fileBeansController.getNextString(min, currentStrings);
         }
         writer.close();
         folder.delete();
